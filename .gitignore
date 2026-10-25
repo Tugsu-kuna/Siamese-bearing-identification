@@ -1,0 +1,13 @@
+# Data and models
+data/
+models/
+*.pth
+*.pt
+*.mat
+
+# Python env
+__pycache__/
+.venv/
+venv/
+*.ipynb_checkpoints/
+
