@@ -99,16 +99,43 @@ This will parse all 240 recordings, extract segment maps, apply frozen normaliza
 
 ## Data Visualization
 
-A comprehensive visualization suite is provided in `src/visualize.py` to inspect the raw vibrations, frequency spectra, spectrogram representations, and preprocessing pipeline.
+A comprehensive visualization suite is provided in `src/visualize.py` to inspect raw vibrations, frequency spectra, time-frequency spectrogram representations, preprocessing pipeline steps, cross-bearing domain shifts, and dataset statistics.
 
-### Generated Figures (Saved to `figures/`):
+### 1. Raw Time-Domain Waveforms
+Comparison of vibration signals for Healthy (`K001`), Inner Race damage (`KI01`), and Outer Race damage (`KA01`). The full 4.0-second envelope is shown on the left, while a zoomed 0–100 ms window on the right details transient impact dynamics, annotated with RMS, Peak, Crest Factor, and Kurtosis.
 
-1. **`01_raw_waveforms.png`**: Time-domain vibration signals comparing Healthy (`K001`), Inner Race (`KI01`), and Outer Race (`KA01`) damage. Shows full 4-second recordings alongside zoomed 0–100 ms impact dynamics, annotated with RMS, Peak, Crest Factor, and Kurtosis.
-2. **`02_frequency_spectra.png`**: Power Spectral Density (PSD) using Welch's method. Includes full 0–32 kHz spectrum (high-frequency structural resonance) and low-frequency zoom 0–1,000 Hz (shaft rotational frequency $f_r = 25\text{ Hz}$ and fault harmonics).
-3. **`03_stft_spectrograms.png`**: 2D STFT log-power spectrograms ($128 \times 128$) across the 3 fault conditions showing distinct time-frequency energy patterns.
-4. **`04_preprocessing_pipeline_steps.png`**: Step-by-step visual walkthrough of feature extraction (Zero-mean segment $\to$ Raw STFT $\to$ Bilinear resize $\to$ Frozen standardization).
-5. **`05_cross_bearing_comparison.png`**: $3 \times 3$ grid demonstrating domain shift across Train, Validation, and Test bearing units.
-6. **`06_dataset_statistics.png`**: Dataset breakdown (segment counts per split, pixel intensity distribution before/after standardization, and RMS distribution across all 12 bearings).
+![Raw Waveforms](figures/01_raw_waveforms.png)
+
+### 2. Frequency-Domain Spectra (Power Spectral Density)
+Welch's Power Spectral Density (PSD) comparing all three fault conditions. The upper plot displays the full Nyquist range (0–32 kHz) highlighting high-frequency structural resonances. The lower plot zooms into 0–1,000 Hz, marking rotational frequency ($f_r = 25\text{ Hz}$) harmonics.
+
+![Frequency Spectra](figures/02_frequency_spectra.png)
+
+### 3. STFT Time-Frequency Spectrograms
+$128 \times 128$ log-power spectrograms across the 3 fault conditions showing distinct time-frequency energy patterns fed into the Siamese network.
+
+![STFT Spectrograms](figures/03_stft_spectrograms.png)
+
+### 4. Feature Extraction & Preprocessing Pipeline
+Step-by-step transformation from raw continuous sensor data into standardized Siamese input maps:
+1. Zero-mean 8,192-sample segment (~128 ms).
+2. STFT log-power spectrogram ($257 \times 121$).
+3. Bilinear resizing to uniform ($128 \times 128$) grid.
+4. Frozen standardization $(X - \mu) / \sigma$.
+
+![Preprocessing Pipeline Steps](figures/04_preprocessing_pipeline_steps.png)
+
+### 5. Cross-Bearing Domain Shift
+$3 \times 3$ spectrogram comparison illustrating inter-bearing physical variability across Train, Validation, and Test bearing units, highlighting the necessity of metric learning for few-shot identification.
+
+![Cross-Bearing Comparison](figures/05_cross_bearing_comparison.png)
+
+### 6. Dataset Partition & Feature Statistics
+Dataset breakdown illustrating segment counts per split (8,815 total), pixel intensity distributions before and after standardization ($\mu \approx 0, \sigma \approx 1$), and vibration RMS energy across all 12 bearing recordings.
+
+![Dataset Statistics](figures/06_dataset_statistics.png)
+
+---
 
 ### How to Run Visualizations
 
