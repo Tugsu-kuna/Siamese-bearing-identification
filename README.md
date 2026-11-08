@@ -139,7 +139,7 @@ $3 \times 3$ spectrogram comparison illustrating inter-bearing physical variabil
 ![Cross-Bearing Comparison](figures/05_cross_bearing_comparison.png)
 
 ### 6. Dataset Partition & Feature Statistics
-Dataset breakdown illustrating segment counts per split (8,815 total), pixel intensity distributions before and after standardization ($\mu \approx 0, \sigma \approx 1$), and vibration RMS energy across all 12 bearing recordings.
+Dataset breakdown illustrating segment counts per split (10,174 total: 5,511 fitting, 937 reference, 1,862 validation, 1,864 test), pixel intensity distributions before and after standardization ($\mu = -4.314, \sigma = 0.944$), and vibration RMS energy across all 12 bearing recordings.
 
 ![Dataset Statistics](figures/06_dataset_statistics.png)
 
@@ -176,4 +176,43 @@ python src/visualize.py --stats
 ```
 
 Export formats such as `--format pdf` or `--format svg` and custom resolution via `--dpi 300` are also supported.
+
+---
+
+## Model Architecture & Metric Learning (Progress Overview)
+
+As preparation for the final project report, the model architectures and metric learning pipeline have been implemented in [`src/model.py`](src/model.py) and [`src/train.py`](src/train.py).
+
+### 1. Siamese Encoder Backbone (`BearingEncoder`)
+The feature extractor processes single-channel standardized STFT maps $(1 \times 128 \times 128)$ through three convolutional stages:
+
+* **Block 1**: $\text{Conv2d}(1 \to 16, 3 \times 3, \text{padding}=1) \to \text{BatchNorm2d} \to \text{ReLU} \to \text{MaxPool2d}(2, 2)$ $\to (16 \times 64 \times 64)$
+* **Block 2**: $\text{Conv2d}(16 \to 32, 3 \times 3, \text{padding}=1) \to \text{BatchNorm2d} \to \text{ReLU} \to \text{MaxPool2d}(2, 2)$ $\to (32 \times 32 \times 32)$
+* **Block 3**: $\text{Conv2d}(32 \to 64, 3 \times 3, \text{padding}=1) \to \text{BatchNorm2d} \to \text{ReLU} \to \text{MaxPool2d}(2, 2)$ $\to (64 \times 16 \times 16)$
+* **Global Average Pooling (GAP)**: Collapses spatial dimensions to a 64-element feature vector.
+* **Projection Layer**: $\text{Linear}(64 \to 32)$.
+* **Unit-Length Normalization**: $L_2$ normalization enforcing unit Euclidean length:
+  $$\mathbf{e} = \frac{\mathbf{z}}{\|\mathbf{z}\|_2}, \quad \|\mathbf{e}\|_2 = 1.0$$
+* **Model Size**: **25,488 parameters** (~317 KB checkpoint size).
+
+### 2. Siamese Twin Architecture & Contrastive Loss
+The Siamese model calls the shared encoder twice on input pairs $(x_1, x_2)$ to yield unit-norm representations $(\mathbf{e}_1, \mathbf{e}_2)$.
+
+The network is optimized using **Contrastive Loss** with margin $m = 1.0$:
+$$L(\mathbf{e}_1, \mathbf{e}_2, y) = \frac{1}{2} y D^2 + \frac{1}{2} (1 - y) \max(0, 1.0 - D)^2$$
+where:
+* $D = \|\mathbf{e}_1 - \mathbf{e}_2\|_2$ is the Euclidean distance between embeddings.
+* $y = 1$ denotes a **matching pair** (same fault class): pulls embeddings together toward $D = 0$.
+* $y = 0$ denotes a **non-matching pair** (different fault classes): repels embeddings apart beyond the margin $D \ge 1.0$.
+
+### 3. Balanced Pair Generation (`BalancedPairDataset`)
+* **Strict Split Hygiene**: Reference recordings (files 1–5) and held-out validation/test bearings **never** enter training pairs.
+* **Balanced Sampling**: Pairs are sampled exclusively from fitting segments (files 6–20 of training bearings `K001, K002, KI01, KI03, KA01, KA03`).
+* **50/50 Balance**: Exactly 50% positive and 50% negative pairs, distributed uniformly across the three fault classes and six training bearings.
+
+### 4. Baseline Classifier for Fair Comparison (`BaselineClassifier`)
+* Employs the identical 3-block convolutional encoder backbone.
+* Replaces the Siamese metric projection with a 3-class linear head ($\text{Linear}(32 \to 3)$), totaling 25,587 parameters.
+* Optimized via Cross-Entropy Loss on the same fitting pool under the exact same budget (30 epochs, Adam lr=0.001, batch size 32) to serve as an empirical benchmark against few-shot metric learning.
+
 
