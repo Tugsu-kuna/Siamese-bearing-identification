@@ -3,9 +3,9 @@ src/data_pipeline.py
 Data preprocessing and feature extraction pipeline for Project 2: Siamese Bearing Identification.
 
 Folder configuration:
-  - data/raw/train/: K001, KI01, KA01 (Files 1-5 are references, 6-20 are fitting)
-  - data/raw/val/:   K002, KI03, KA03 (Held-out bearings, use all 20 files)
-  - data/raw/test/:  K003, K004, KI05, KI07, KA05, KA07 (Held-out bearings, use all 20 files)
+  - data/raw/train/: K001, K002, KI01, KI03, KA01, KA03 (Files 1-5 are references, 6-20 are fitting)
+  - data/raw/val/:   K003, KI05, KA05 (Held-out bearings, use all 20 files)
+  - data/raw/test/:  K004, KI07, KA07 (Held-out bearings, use all 20 files)
 
 Pipeline steps:
   1. Parse 64 kHz vibration from Paderborn .mat files (channel 'vibration_1').
@@ -41,19 +41,19 @@ IDX_TO_CLASS = {i: cls_name for i, cls_name in enumerate(CLASSES)}
 # Dataset folder layout
 BEARING_SPLITS = {
     "train": {
-        "Healthy": ["K001"],
-        "Inner_race": ["KI01"],
-        "Outer_race": ["KA01"]
+        "Healthy": ["K001", "K002"],
+        "Inner_race": ["KI01", "KI03"],
+        "Outer_race": ["KA01", "KA03"]
     },
     "val": {
-        "Healthy": ["K002"],
-        "Inner_race": ["KI03"],
-        "Outer_race": ["KA03"]
+        "Healthy": ["K003"],
+        "Inner_race": ["KI05"],
+        "Outer_race": ["KA05"]
     },
     "test": {
-        "Healthy": ["K003", "K004"],
-        "Inner_race": ["KI05", "KI07"],
-        "Outer_race": ["KA05", "KA07"]
+        "Healthy": ["K004"],
+        "Inner_race": ["KI07"],
+        "Outer_race": ["KA07"]
     }
 }
 

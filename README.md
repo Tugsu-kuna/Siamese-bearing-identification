@@ -20,24 +20,32 @@ The objective of this project is to classify known mechanical faults (Healthy, I
 
 ## Dataset Structure
 
-The recordings are organized into `data/raw/` by fault type and bearing code:
+The recordings are partitioned strictly across bearings as specified in the project guidelines:
+
+| Class | Training Pool | Validation | Test |
+| :--- | :--- | :--- | :--- |
+| **Healthy** | `K001`, `K002` | `K003` | `K004` |
+| **Inner race** | `KI01`, `KI03` | `KI05` | `KI07` |
+| **Outer race** | `KA01`, `KA03` | `KA05` | `KA07` |
+
+Directory organization in `data/raw/`:
 
 ```
 data/raw/
 ├── train/
 │   ├── K001/    # Healthy    (Files 1–5: references, 6–20: fitting)
+│   ├── K002/    # Healthy    (Files 1–5: references, 6–20: fitting)
 │   ├── KI01/    # Inner race (Files 1–5: references, 6–20: fitting)
-│   └── KA01/    # Outer race (Files 1–5: references, 6–20: fitting)
+│   ├── KI03/    # Inner race (Files 1–5: references, 6–20: fitting)
+│   ├── KA01/    # Outer race (Files 1–5: references, 6–20: fitting)
+│   └── KA03/    # Outer race (Files 1–5: references, 6–20: fitting)
 ├── val/
-│   ├── K002/    # Healthy    (Held-out bearing, all 20 files)
-│   ├── KI03/    # Inner race (Held-out bearing, all 20 files)
-│   └── KA03/    # Outer race (Held-out bearing, all 20 files)
+│   ├── K003/    # Healthy    (Held-out bearing, all 20 files)
+│   ├── KI05/    # Inner race (Held-out bearing, all 20 files)
+│   └── KA05/    # Outer race (Held-out bearing, all 20 files)
 └── test/
-    ├── K003/    # Healthy    (Held-out bearing, all 20 files)
     ├── K004/    # Healthy    (Held-out bearing, all 20 files)
-    ├── KI05/    # Inner race (Held-out bearing, all 20 files)
     ├── KI07/    # Inner race (Held-out bearing, all 20 files)
-    ├── KA05/    # Outer race (Held-out bearing, all 20 files)
     └── KA07/    # Outer race (Held-out bearing, all 20 files)
 ```
 

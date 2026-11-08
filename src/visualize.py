@@ -425,9 +425,9 @@ def plot_cross_bearing_comparison(raw_dir: Path, out_path: Path, dpi: int = 300)
     print(f"Generating cross-bearing domain shift visualization -> {out_path}...")
     matrix_layout = [
         # (Class label, [ (Split, Bearing) ])
-        ("Healthy", [("train", "K001"), ("val", "K002"), ("test", "K003")]),
-        ("Inner Race", [("train", "KI01"), ("val", "KI03"), ("test", "KI05")]),
-        ("Outer Race", [("train", "KA01"), ("val", "KA03"), ("test", "KA05")])
+        ("Healthy", [("train", "K001"), ("val", "K003"), ("test", "K004")]),
+        ("Inner Race", [("train", "KI01"), ("val", "KI05"), ("test", "KI07")]),
+        ("Outer Race", [("train", "KA01"), ("val", "KA05"), ("test", "KA07")])
     ]
 
     fig, axes = plt.subplots(3, 3, figsize=(13, 11), sharex=True, sharey=True)
@@ -502,10 +502,10 @@ def plot_dataset_statistics(raw_dir: Path, out_path: Path, dpi: int = 300) -> No
 
     # 1. Segment Counts Bar Chart
     split_counts = {
-        "Fitting Pool\n(Train 6-20)": 2749,
-        "Reference Pool\n(Train 1-5)": 465,
-        "Validation\n(Val 1-20)": 1875,
-        "Test Pool\n(Test 1-20)": 3726
+        "Fitting Pool\n(Train 6-20)": 5511,
+        "Reference Pool\n(Train 1-5)": 937,
+        "Validation\n(Val 1-20)": 1862,
+        "Test Pool\n(Test 1-20)": 1864
     }
     bar_colors = ["#386cb0", "#7fc97f", "#beaed4", "#fdc086"]
     bars = ax_counts.bar(split_counts.keys(), split_counts.values(), color=bar_colors, edgecolor="black", width=0.6)
@@ -516,9 +516,9 @@ def plot_dataset_statistics(raw_dir: Path, out_path: Path, dpi: int = 300) -> No
                            xytext=(0, 3),
                            textcoords="offset points",
                            ha="center", va="bottom", fontsize=9, fontweight="bold")
-    ax_counts.set_title("Extracted Segments by Split (Total: 8,815)", fontsize=11, fontweight="bold")
+    ax_counts.set_title("Extracted Segments by Split (Total: 10,174)", fontsize=11, fontweight="bold")
     ax_counts.set_ylabel("Segment Count", fontsize=10, fontweight="bold")
-    ax_counts.set_ylim(0, 4200)
+    ax_counts.set_ylim(0, 6500)
     ax_counts.tick_params(axis="x", labelsize=8)
 
     # 2. Pixel Intensity Distribution (Simulated from actual sample statistics)
@@ -544,12 +544,12 @@ def plot_dataset_statistics(raw_dir: Path, out_path: Path, dpi: int = 300) -> No
 
     # 3. Vibration RMS Comparison Across All 12 Bearings
     all_bearings_info = [
-        ("K001", "Healthy", "train"), ("K002", "Healthy", "val"),
-        ("K003", "Healthy", "test"), ("K004", "Healthy", "test"),
-        ("KI01", "Inner", "train"),   ("KI03", "Inner", "val"),
-        ("KI05", "Inner", "test"),    ("KI07", "Inner", "test"),
-        ("KA01", "Outer", "train"),   ("KA03", "Outer", "val"),
-        ("KA05", "Outer", "test"),    ("KA07", "Outer", "test"),
+        ("K001", "Healthy", "train"), ("K002", "Healthy", "train"),
+        ("K003", "Healthy", "val"),   ("K004", "Healthy", "test"),
+        ("KI01", "Inner", "train"),   ("KI03", "Inner", "train"),
+        ("KI05", "Inner", "val"),     ("KI07", "Inner", "test"),
+        ("KA01", "Outer", "train"),   ("KA03", "Outer", "train"),
+        ("KA05", "Outer", "val"),     ("KA07", "Outer", "test"),
     ]
 
     bearing_names = []
